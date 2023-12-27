@@ -58,34 +58,34 @@ jobs:
   #     run:
   #       shell: bash
   #
-    steps:
-    - name: get llvm-project
-      run: curl -L https://github.com/llvm/llvm-project/releases/download/llvmorg-${{ needs.get-version.outputs.tag }}/${{ needs.get-version.outputs.llvm-version }}.tar.xz | tar -xJ ${{ matrix.config.extra-tar-args }}
-
-    - name: cmake
-      run: |
-        cd ${{ needs.get-version.outputs.llvm-version }}
-        mkdir build
-        cd build
-        cmake ../llvm ${{ env.COMMON_CMAKE_ARGS }} ${{ matrix.config.os-cmake-args }}
-
-    - name: build
-      run: cmake --build ${{ needs.get-version.outputs.llvm-version }}/build ${{ matrix.config.build-args }} --target clang-format clangd
-
-    - name: print macos dependencies
-      run:  |
-        otool -L ${{ needs.get-version.outputs.llvm-version }}${{ matrix.config.bindir }}/clangd
-        otool -L ${{ needs.get-version.outputs.llvm-version }}${{ matrix.config.bindir }}/clang-format
-      if: matrix.config.os == 'macos-latest'
-
-    - name: upload artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: clang_${{ matrix.config.name }}_${{ matrix.config.arch }}
-        path: |
-          ${{ needs.get-version.outputs.llvm-version }}${{ matrix.config.bindir }}/clangd${{ matrix.config.extension }}
-          ${{ needs.get-version.outputs.llvm-version }}${{ matrix.config.bindir }}/clang-format${{ matrix.config.extension }}
-
+    # steps:
+    # - name: get llvm-project
+    #   run: curl -L https://github.com/llvm/llvm-project/releases/download/llvmorg-${{ needs.get-version.outputs.tag }}/${{ needs.get-version.outputs.llvm-version }}.tar.xz | tar -xJ ${{ matrix.config.extra-tar-args }}
+    #
+    # - name: cmake
+    #   run: |
+    #     cd ${{ needs.get-version.outputs.llvm-version }}
+    #     mkdir build
+    #     cd build
+    #     cmake ../llvm ${{ env.COMMON_CMAKE_ARGS }} ${{ matrix.config.os-cmake-args }}
+    #
+    # - name: build
+    #   run: cmake --build ${{ needs.get-version.outputs.llvm-version }}/build ${{ matrix.config.build-args }} --target clang-format clangd
+    #
+    # - name: print macos dependencies
+    #   run:  |
+    #     otool -L ${{ needs.get-version.outputs.llvm-version }}${{ matrix.config.bindir }}/clangd
+    #     otool -L ${{ needs.get-version.outputs.llvm-version }}${{ matrix.config.bindir }}/clang-format
+    #   if: matrix.config.os == 'macos-latest'
+    #
+    # - name: upload artifacts
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: clang_${{ matrix.config.name }}_${{ matrix.config.arch }}
+    #     path: |
+    #       ${{ needs.get-version.outputs.llvm-version }}${{ matrix.config.bindir }}/clangd${{ matrix.config.extension }}
+    #       ${{ needs.get-version.outputs.llvm-version }}${{ matrix.config.bindir }}/clang-format${{ matrix.config.extension }}
+    #
   build-linux:
     needs: get-version
     name: build (${{ matrix.config.name }}, ${{ matrix.config.arch }})
